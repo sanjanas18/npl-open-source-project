@@ -1,7 +1,11 @@
 // step detail page, shows everything about one single step (one csv row)
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getDependents, getPrerequisites, stepsById } from "@/lib/steps";
+import { getDependents, getPrerequisites, steps, stepsById } from "@/lib/steps";
+
+export function generateStaticParams() {
+  return steps.map(({ track, id }) => ({ track, id }));
+}
 
 export default async function StepDetail({
   params,
