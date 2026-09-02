@@ -1,8 +1,14 @@
 // phase specific page that shows the steps (only shown if 4 or more steps in a phase)
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { dependencyChains, stepsForPhase, tracks } from "@/lib/steps";
+import { dependencyChains, phasesForTrack, stepsForPhase, tracks } from "@/lib/steps";
 import PhaseWorkstreams from "./PhaseWorkstreams";
+
+export function generateStaticParams() {
+  return tracks().flatMap((track) =>
+    phasesForTrack(track).map((phase) => ({ track, phase })),
+  );
+}
 
 export default async function PhaseDetail({
   params,

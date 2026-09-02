@@ -10,6 +10,10 @@ import {
 } from "@/lib/steps";
 import PathwayAccordion from "./PathwayAccordion";
 
+export function generateStaticParams() {
+  return tracks().map((track) => ({ track }));
+}
+
 export default async function PathwayOverview({
   params,
 }: {
