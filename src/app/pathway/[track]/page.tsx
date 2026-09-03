@@ -6,9 +6,11 @@ import {
   keyAgencies,
   phasesForTrack,
   stepsForPhase,
+  stepsForTrack,
   tracks,
 } from "@/lib/steps";
 import PathwayAccordion from "./PathwayAccordion";
+import DependencyGraph from "@/components/DependencyGraph";
 
 export default async function PathwayOverview({
   params,
@@ -83,6 +85,8 @@ export default async function PathwayOverview({
         )}
 
         <PathwayAccordion track={track} phases={phases} />
+
+        <DependencyGraph steps={stepsForTrack(track)} track={track} />
 
         <Link
           href="/select-type"
