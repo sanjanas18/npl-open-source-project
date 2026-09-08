@@ -1,7 +1,10 @@
-// landing page, first thing you see, just static copy and a link to explore
-import Link from "next/link";
+// landing page, first thing you see, has the location search
+import { listCities } from "@/lib/steps";
+import LocationSearch from "./LocationSearch";
 
 export default function Home() {
+  const cities = listCities();
+
   return (
     <div className="flex flex-1 flex-col bg-background">
       <header className="flex items-center justify-between border-b border-zinc-200 bg-white px-8 py-4">
@@ -23,28 +26,7 @@ export default function Home() {
           in opening a child care business.
         </p>
 
-        <div className="mt-10 w-full max-w-md text-left">
-          <label className="mb-1 block text-xs font-medium tracking-wide text-zinc-500">
-            WHERE ARE YOU PLANNING TO OPERATE?
-          </label>
-          <div className="flex gap-2">
-            <input
-              disabled
-              placeholder="e.g. New York City, NY"
-              className="flex-1 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm text-zinc-500"
-            />
-            <Link
-              href="/select-type"
-              className="rounded-md bg-navy px-4 py-2 text-sm font-medium text-white"
-            >
-              Explore the process →
-            </Link>
-          </div>
-          <p className="mt-2 text-xs text-zinc-400">
-            Child care requirements can vary by state and locality. NYC is the only location
-            available right now.
-          </p>
-        </div>
+        <LocationSearch cities={cities} />
       </main>
 
       <footer className="border-t border-zinc-200 bg-white px-8 py-6 text-center text-xs text-zinc-400">

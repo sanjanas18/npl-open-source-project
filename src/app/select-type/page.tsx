@@ -2,6 +2,9 @@
 import Link from "next/link";
 import { tracks, stepsForTrack, keyAgencies } from "@/lib/steps";
 
+// this page isn't city-aware in the URL yet, so it just shows NYC directly
+const CITY = "nyc";
+
 const TRACK_COPY: Record<
   string,
   {
@@ -29,7 +32,7 @@ const TRACK_COPY: Record<
 };
 
 export default function ComparePage() {
-  const allTracks = tracks();
+  const allTracks = tracks(CITY);
 
   return (
     <div className="flex flex-1 flex-col bg-background">
@@ -54,8 +57,8 @@ export default function ComparePage() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {allTracks.map((track) => {
             const copy = TRACK_COPY[track];
-            const steps = stepsForTrack(track);
-            const agencies = keyAgencies(track);
+            const steps = stepsForTrack(CITY, track);
+            const agencies = keyAgencies(CITY, track);
             return (
               <div
                 key={track}
@@ -92,7 +95,7 @@ export default function ComparePage() {
                 </dl>
 
                 <Link
-                  href={`/pathway/${encodeURIComponent(track)}`}
+                  href={`/pathway/${CITY}/${encodeURIComponent(track)}`}
                   className={`mt-6 rounded-md px-4 py-2 text-center text-sm font-medium text-white ${
                     track === "Home" ? "bg-brand-green" : "bg-navy"
                   }`}
@@ -118,8 +121,8 @@ export default function ComparePage() {
             </thead>
             <tbody>
               {[
-                { label: "Key agencies", values: allTracks.map((t) => keyAgencies(t).join(", ") || "-") },
-                { label: "Total steps", values: allTracks.map((t) => String(stepsForTrack(t).length)) },
+                { label: "Key agencies", values: allTracks.map((t) => keyAgencies(CITY, t).join(", ") || "-") },
+                { label: "Total steps", values: allTracks.map((t) => String(stepsForTrack(CITY, t).length)) },
                 { label: "Regulatory complexity", values: allTracks.map(() => "-") },
                 { label: "Facility investment", values: allTracks.map(() => "-") },
               ].map((row) => (
