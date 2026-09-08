@@ -14,6 +14,12 @@ import PathwayAccordion from "./PathwayAccordion";
 import DependencyGraph from "@/components/DependencyGraph";
 import { cityLabel } from "@/lib/cities";
 
+export function generateStaticParams() {
+  return listCities().flatMap((city) =>
+    tracks(city).map((track) => ({ city, track })),
+  );
+}
+
 export default async function PathwayOverview({
   params,
 }: {
