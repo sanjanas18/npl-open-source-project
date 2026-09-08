@@ -1,9 +1,10 @@
-// pathway overview page, lists the phases for a track (home or center)
+// pathway overview page, lists the phases for a track (home or center), for one city
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  dependencyLayers,
+  dependencyChains,
   keyAgencies,
+  listCities,
   phasesForTrack,
   stepsForPhase,
   stepsForTrack,
@@ -11,25 +12,32 @@ import {
 } from "@/lib/steps";
 import PathwayAccordion from "./PathwayAccordion";
 import DependencyGraph from "@/components/DependencyGraph";
+import { cityLabel } from "@/lib/cities";
 
 export default async function PathwayOverview({
   params,
 }: {
-  params: Promise<{ track: string }>;
+  params: Promise<{ city: string; track: string }>;
 }) {
-  const { track: encodedTrack } = await params;
+  const { city: encodedCity, track: encodedTrack } = await params;
+  const city = decodeURIComponent(encodedCity);
   const track = decodeURIComponent(encodedTrack);
 
-  if (!tracks().includes(track)) {
+  if (!listCities().includes(city)) {
     notFound();
   }
 
-  const phaseNames = phasesForTrack(track);
+  if (!tracks(city).includes(track)) {
+    notFound();
+  }
+
+  const phaseNames = phasesForTrack(city, track);
   const phases = phaseNames.map((phase) => ({
     phase,
-    steps: stepsForPhase(track, phase),
-    layers: dependencyLayers(track, phase),
+    steps: stepsForPhase(city, track, phase),
+    chains: dependencyChains(city, track, phase),
   }));
+  const location = cityLabel(city);
 
   return (
     <div className="flex flex-1 flex-col bg-background">
@@ -39,7 +47,7 @@ export default async function PathwayOverview({
         </span>
         <div className="flex items-center gap-6 text-sm text-zinc-500">
           <Link href="/select-type">All Pathways</Link>
-          <span>New York City, NY</span>
+          <span>{location}</span>
         </div>
       </header>
 
@@ -53,13 +61,13 @@ export default async function PathwayOverview({
               <span className="rounded-md border border-zinc-300 px-2 py-0.5 text-xs font-medium tracking-wide text-zinc-600">
                 {track.toUpperCase()}-BASED
               </span>
-              <span className="text-xs text-zinc-400">New York City, NY</span>
+              <span className="text-xs text-zinc-400">{location}</span>
             </div>
             <h1 className="mt-2 font-serif text-3xl font-semibold text-zinc-900">
               Pathway Overview
             </h1>
             <p className="mt-2 max-w-xl text-zinc-600">
-              Opening a {track.toLowerCase()}-based child care program in New York City involves{" "}
+              Opening a {track.toLowerCase()}-based child care program in {location} involves{" "}
               {phases.length} phases and multiple regulatory agencies.
             </p>
           </div>
@@ -71,7 +79,9 @@ export default async function PathwayOverview({
             </div>
             <div>
               <div className="text-xs text-zinc-400">Key agencies</div>
-              <div className="text-xl font-semibold text-zinc-900">{keyAgencies(track).length}</div>
+              <div className="text-xl font-semibold text-zinc-900">
+                {keyAgencies(city, track).length}
+              </div>
             </div>
           </div>
         </div>
@@ -86,7 +96,7 @@ export default async function PathwayOverview({
 
         <PathwayAccordion track={track} phases={phases} />
 
-        <DependencyGraph steps={stepsForTrack(track)} track={track} />
+        <DependencyGraph steps={stepsForTrack(city, track)} track={track} />
 
         <Link
           href="/select-type"

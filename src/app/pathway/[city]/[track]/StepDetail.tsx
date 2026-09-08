@@ -2,23 +2,20 @@
 
 import type { Step } from "@/lib/steps";
 
-type StepDetailPanelProps = {
-  step: Step | null;
-  prerequisites?: Step[];
-  dependents?: Step[];
-  onClose: () => void;
-  onSelectStep?: (id: string) => void;
-};
-
-export default function StepDetailPanel({
+// the half-screen slide-over for one step, shared by every phase dropdown on this page
+export default function StepDetail({
   step,
-  prerequisites = [],
-  dependents = [],
+  prerequisites,
+  dependents,
   onClose,
   onSelectStep,
-}: StepDetailPanelProps) {
-  if (!step) return null;
-
+}: {
+  step: Step;
+  prerequisites: Step[];
+  dependents: Step[];
+  onClose: () => void;
+  onSelectStep: (id: string) => void;
+}) {
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/20" onClick={onClose} />
@@ -36,9 +33,7 @@ export default function StepDetailPanel({
             ✕
           </button>
         </div>
-        <h2 className="mt-2 font-serif text-xl font-semibold text-zinc-900">
-          {step.name}
-        </h2>
+        <h2 className="mt-2 font-serif text-xl font-semibold text-zinc-900">{step.name}</h2>
 
         <p className="mt-4 whitespace-pre-line text-sm text-zinc-700">
           {step.description || "-"}
@@ -47,9 +42,7 @@ export default function StepDetailPanel({
         <div className="mt-6 flex flex-col gap-3 text-sm">
           <div className="flex justify-between border-t border-zinc-100 pt-3">
             <span className="text-zinc-500">Est. time</span>
-            <span className="font-medium text-zinc-800">
-              {step.timeToComplete ?? "-"}
-            </span>
+            <span className="font-medium text-zinc-800">{step.timeToComplete ?? "-"}</span>
           </div>
           <div className="flex justify-between border-t border-zinc-100 pt-3">
             <span className="text-zinc-500">Cost</span>
@@ -57,9 +50,7 @@ export default function StepDetailPanel({
           </div>
           <div className="flex justify-between border-t border-zinc-100 pt-3">
             <span className="text-zinc-500">Processing time</span>
-            <span className="font-medium text-zinc-800">
-              {step.processingTime ?? "-"}
-            </span>
+            <span className="font-medium text-zinc-800">{step.processingTime ?? "-"}</span>
           </div>
           <div className="flex justify-between border-t border-zinc-100 pt-3">
             <span className="text-zinc-500">Renewal</span>
@@ -77,17 +68,13 @@ export default function StepDetailPanel({
             <ul className="mt-2 flex flex-col gap-1">
               {prerequisites.map((prereq) => (
                 <li key={prereq.id}>
-                  {onSelectStep ? (
-                    <button
-                      type="button"
-                      onClick={() => onSelectStep(prereq.id)}
-                      className="text-sm text-brand-amber underline"
-                    >
-                      {prereq.name}
-                    </button>
-                  ) : (
-                    <span className="text-sm text-zinc-700">{prereq.name}</span>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => onSelectStep(prereq.id)}
+                    className="text-sm text-brand-amber underline"
+                  >
+                    {prereq.name}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -100,17 +87,13 @@ export default function StepDetailPanel({
             <ul className="mt-2 flex flex-col gap-1">
               {dependents.map((dependent) => (
                 <li key={dependent.id}>
-                  {onSelectStep ? (
-                    <button
-                      type="button"
-                      onClick={() => onSelectStep(dependent.id)}
-                      className="text-sm text-brand-amber underline"
-                    >
-                      {dependent.name}
-                    </button>
-                  ) : (
-                    <span className="text-sm text-zinc-700">{dependent.name}</span>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => onSelectStep(dependent.id)}
+                    className="text-sm text-brand-amber underline"
+                  >
+                    {dependent.name}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -118,9 +101,7 @@ export default function StepDetailPanel({
         )}
 
         <div className="mt-6 border-t border-zinc-100 pt-4">
-          <div className="text-xs font-medium tracking-wide text-zinc-400">
-            OFFICIAL RESOURCE
-          </div>
+          <div className="text-xs font-medium tracking-wide text-zinc-400">OFFICIAL RESOURCE</div>
           {step.formLink ? (
             <a
               href={step.formLink}

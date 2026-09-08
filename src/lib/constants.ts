@@ -1,1 +1,0 @@
-export const DEDICATED_PAGE_STEP_THRESHOLD = 4;

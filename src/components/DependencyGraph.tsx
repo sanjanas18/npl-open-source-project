@@ -40,14 +40,23 @@ type DependencyGraphProps = {
   track: string;
 };
 
-export default function DependencyGraph({ steps, track }: DependencyGraphProps) {
-  const [selectedStep, setSelectedStep] = useState<Step | null>(null);
+export default function DependencyGraph({ steps }: DependencyGraphProps) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const graph = computeGraphLayout(steps);
   const phases = getPhases(steps);
 
   if (graph.nodes.length === 0) return null;
+
+  const stepsById = new Map(steps.map((s) => [s.id, s]));
+  const selectedStep = selectedId ? (stepsById.get(selectedId) ?? null) : null;
+  const prerequisites = selectedStep
+    ? selectedStep.dependsOn.map((id) => stepsById.get(id)).filter((s): s is Step => Boolean(s))
+    : [];
+  const dependents = selectedStep
+    ? steps.filter((s) => s.dependsOn.includes(selectedStep.id))
+    : [];
 
   // Build lookup for node positions by ID
   const nodeById = new Map(graph.nodes.map((n) => [n.step.id, n]));
@@ -180,7 +189,7 @@ export default function DependencyGraph({ steps, track }: DependencyGraphProps) 
                 }}
                 onMouseEnter={() => setHoveredId(node.step.id)}
                 onMouseLeave={() => setHoveredId(null)}
-                onClick={() => setSelectedStep(node.step)}
+                onClick={() => setSelectedId(node.step.id)}
               >
                 <rect
                   x={rx}
@@ -214,7 +223,10 @@ export default function DependencyGraph({ steps, track }: DependencyGraphProps) 
       {/* Reusable step detail sidebar */}
       <StepDetailPanel
         step={selectedStep}
-        onClose={() => setSelectedStep(null)}
+        prerequisites={prerequisites}
+        dependents={dependents}
+        onClose={() => setSelectedId(null)}
+        onSelectStep={setSelectedId}
       />
     </div>
   );
