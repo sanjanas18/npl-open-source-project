@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Step } from "@/lib/steps";
-import StepDetail from "./StepDetail";
+import StepDetailPanel from "@/components/StepDetailPanel";
 
 // Client facing accordian drop down component
 type PhaseData = {
@@ -109,15 +109,13 @@ export default function PathwayAccordion({
         })}
       </ol>
 
-      {openStep && (
-        <StepDetail
-          step={openStep}
-          prerequisites={prerequisites}
-          dependents={dependents}
-          onClose={() => setOpenStepId(null)}
-          onSelectStep={setOpenStepId}
-        />
-      )}
+      <StepDetailPanel
+        step={openStep}
+        prerequisites={prerequisites}
+        dependents={dependents}
+        onClose={() => setOpenStepId(null)}
+        onSelectStep={setOpenStepId}
+      />
     </>
   );
 }
