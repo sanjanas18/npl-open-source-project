@@ -19,7 +19,7 @@ const TRACK_COPY: Record<
     label: "Home-Based Child Care",
     tagline: "Care provided from your home.",
     accent: "border-brand-green",
-    location: "Your home",
+    location: "Personal residence, such as a one- or two-family dwelling or an apartment unit in a legally classified residential building",
     registeredWith: "-",
   },
   Center: {
@@ -72,7 +72,7 @@ export default function ComparePage() {
                 </h2>
 
                 <dl className="mt-4 flex flex-col divide-y divide-zinc-100 rounded-md border border-zinc-100 text-sm">
-                  <div className="flex justify-between px-3 py-2">
+                  <div className={`px-3 py-2 ${(copy?.location ?? "").length > 50 ? "flex flex-col gap-1" : "flex justify-between"}`}>
                     <dt className="text-zinc-500">Location</dt>
                     <dd className="font-medium text-zinc-800">{copy?.location ?? "-"}</dd>
                   </div>
@@ -96,9 +96,8 @@ export default function ComparePage() {
 
                 <Link
                   href={`/pathway/${CITY}/${encodeURIComponent(track)}`}
-                  className={`mt-6 rounded-md px-4 py-2 text-center text-sm font-medium text-white ${
-                    track === "Home" ? "bg-brand-green" : "bg-navy"
-                  }`}
+                  className={`mt-6 rounded-md px-4 py-2 text-center text-sm font-medium text-white ${track === "Home" ? "bg-brand-green" : "bg-navy"
+                    }`}
                 >
                   Explore {track}-Based Path →
                 </Link>
