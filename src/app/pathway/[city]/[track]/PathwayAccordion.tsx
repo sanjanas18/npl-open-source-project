@@ -86,17 +86,7 @@ export default function PathwayAccordion({
                   )}
 
                   {isSingleWorkstream ? (
-                    <div className="flex flex-col divide-y divide-zinc-100">
-                      {(chains[0] ?? []).map((step, stepIndex) => (
-                        <StepRow
-                          key={step.id}
-                          step={step}
-                          stepIndex={stepIndex}
-                          chain={chains[0] ?? []}
-                          onOpen={() => setOpenStepId(step.id)}
-                        />
-                      ))}
-                    </div>
+                    <ChainLayers chain={chains[0] ?? []} onOpen={setOpenStepId} />
                   ) : (
                     <div className="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] items-stretch gap-4">
                       {chains.map((chain, chainIndex) => (
@@ -105,17 +95,8 @@ export default function PathwayAccordion({
                           className="flex flex-col rounded-lg border border-brand-amber/30 bg-white"
                         >
                           <div className="h-3 rounded-t-lg bg-amber-50" />
-                          <div className="flex flex-col divide-y divide-zinc-100 px-4">
-                            {chain.map((step, stepIndex) => (
-                              <StepRow
-                                key={step.id}
-                                step={step}
-                                stepIndex={stepIndex}
-                                chain={chain}
-                                onOpen={() => setOpenStepId(step.id)}
-                                showNumber={!chains.every((c) => c.length === 1)}
-                              />
-                            ))}
+                          <div className="px-4">
+                            <ChainLayers chain={chain} onOpen={setOpenStepId} />
                           </div>
                         </div>
                       ))}
@@ -189,6 +170,113 @@ function StepRow({
       >
         Details →
       </button>
+    </div>
+  );
+}
+
+// Groups steps in a chain by dependency layer — steps whose in-scope
+// prerequisites are all resolved go in the same layer (can happen in parallel).
+function computeLayers(chain: Step[]): Step[][] {
+  const chainIds = new Set(chain.map((s) => s.id));
+  const remaining = new Map(chain.map((s) => [s.id, s]));
+  const resolved = new Set<string>();
+  const layers: Step[][] = [];
+
+  while (remaining.size > 0) {
+    const ready = Array.from(remaining.values()).filter((step) =>
+      step.dependsOn
+        .filter((id) => chainIds.has(id))
+        .every((id) => resolved.has(id)),
+    );
+    const layer = ready.length > 0 ? ready : Array.from(remaining.values());
+    for (const step of layer) {
+      remaining.delete(step.id);
+      resolved.add(step.id);
+    }
+    layers.push(layer);
+  }
+
+  return layers;
+}
+
+// Renders a chain as grouped dependency layers. Steps in the same layer
+// are shown side-by-side to indicate they can happen in parallel.
+function ChainLayers({
+  chain,
+  onOpen,
+}: {
+  chain: Step[];
+  onOpen: (id: string) => void;
+}) {
+  const layers = computeLayers(chain);
+  let stepCounter = 0;
+
+  return (
+    <div className="flex flex-col gap-2">
+      {layers.map((layer, layerIndex) => {
+        const isParallel = layer.length > 1;
+        const layerStartIndex = stepCounter;
+
+        return (
+          <div key={layerIndex}>
+            {isParallel && (
+              <div className="my-2 flex items-center gap-3">
+                <div className="h-px flex-1 bg-zinc-200" />
+                <div className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs text-zinc-500">
+                  ✛ These {layer.length} steps can happen simultaneously
+                </div>
+                <div className="h-px flex-1 bg-zinc-200" />
+              </div>
+            )}
+
+            {isParallel ? (
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(210px,1fr))] items-stretch gap-3">
+                {layer.map((step, i) => {
+                  const idx = layerStartIndex + i;
+                  stepCounter++;
+                  return (
+                    <div
+                      key={step.id}
+                      className="rounded-lg border border-brand-amber/30 bg-amber-50/30 px-4"
+                    >
+                      <StepRow
+                        step={step}
+                        stepIndex={idx}
+                        chain={chain}
+                        onOpen={() => onOpen(step.id)}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-col divide-y divide-zinc-100">
+                {layer.map((step) => {
+                  const idx = stepCounter;
+                  stepCounter++;
+                  return (
+                    <StepRow
+                      key={step.id}
+                      step={step}
+                      stepIndex={idx}
+                      chain={chain}
+                      onOpen={() => onOpen(step.id)}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            {isParallel && layerIndex < layers.length - 1 && (
+              <div className="my-2 flex items-center gap-3">
+                <div className="h-px flex-1 bg-zinc-200" />
+                <div className="text-xs text-zinc-400">then</div>
+                <div className="h-px flex-1 bg-zinc-200" />
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
