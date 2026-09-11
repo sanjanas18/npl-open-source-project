@@ -1,35 +1,10 @@
 // compare page, lets you pick home or center based and see them side by side
 import Link from "next/link";
 import { tracks, stepsForTrack, keyAgencies } from "@/lib/steps";
+import { TRACK_COPY } from "@/lib/track-copy";
 
 // this page isn't city-aware in the URL yet, so it just shows NYC directly
 const CITY = "nyc";
-
-const TRACK_COPY: Record<
-  string,
-  {
-    label: string;
-    tagline: string;
-    accent: string;
-    location: string;
-    registeredWith: string;
-  }
-> = {
-  Home: {
-    label: "Home-Based Child Care",
-    tagline: "Care provided from your home.",
-    accent: "border-brand-green",
-    location: "Personal residence, such as a one- or two-family dwelling or an apartment unit in a legally classified residential building",
-    registeredWith: "-",
-  },
-  Center: {
-    label: "Center-Based Child Care",
-    tagline: "Care provided from a dedicated facility.",
-    accent: "border-navy",
-    location: "Dedicated non-residential facility",
-    registeredWith: "-",
-  },
-};
 
 export default function ComparePage() {
   const allTracks = tracks(CITY);

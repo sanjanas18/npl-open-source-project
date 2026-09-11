@@ -13,6 +13,7 @@ import {
 import PathwayAccordion from "./PathwayAccordion";
 import DependencyGraph from "@/components/DependencyGraph";
 import { cityLabel } from "@/lib/cities";
+import { TRACK_COPY } from "@/lib/track-copy";
 
 export function generateStaticParams() {
   return listCities().flatMap((city) =>
@@ -44,6 +45,9 @@ export default async function PathwayOverview({
     chains: dependencyChains(city, track, phase),
   }));
   const location = cityLabel(city);
+  const copy = TRACK_COPY[track];
+  const allTrackSteps = stepsForTrack(city, track);
+  const agencies = keyAgencies(city, track);
 
   return (
     <div className="flex flex-1 flex-col bg-background">
@@ -85,12 +89,33 @@ export default async function PathwayOverview({
             </div>
             <div>
               <div className="text-xs text-zinc-400">Key agencies</div>
-              <div className="text-xl font-semibold text-zinc-900">
-                {keyAgencies(city, track).length}
-              </div>
+              <div className="text-xl font-semibold text-zinc-900">{agencies.length}</div>
             </div>
           </div>
         </div>
+
+        <dl className="mt-6 flex flex-col divide-y divide-zinc-100 rounded-md border border-zinc-100 bg-white text-sm">
+          <div className="flex items-start justify-between gap-6 px-4 py-3">
+            <dt className="shrink-0 text-zinc-500">Location</dt>
+            <dd className="text-right font-medium text-zinc-800">{copy?.location ?? "-"}</dd>
+          </div>
+          <div className="flex justify-between px-4 py-3">
+            <dt className="text-zinc-500">Key agencies</dt>
+            <dd className="font-medium text-zinc-800">{agencies.join(", ") || "-"}</dd>
+          </div>
+          <div className="flex justify-between px-4 py-3">
+            <dt className="text-zinc-500">Estimated timeline</dt>
+            <dd className="text-zinc-400">-</dd>
+          </div>
+          <div className="flex justify-between px-4 py-3">
+            <dt className="text-zinc-500">Estimated cost</dt>
+            <dd className="text-zinc-400">-</dd>
+          </div>
+          <div className="flex justify-between px-4 py-3">
+            <dt className="text-zinc-500">Total steps</dt>
+            <dd className="font-medium text-zinc-800">{allTrackSteps.length}</dd>
+          </div>
+        </dl>
 
         {track === "Home" && (
           <div className="mt-6 rounded-md border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -102,7 +127,7 @@ export default async function PathwayOverview({
 
         <PathwayAccordion track={track} phases={phases} />
 
-        <DependencyGraph steps={stepsForTrack(city, track)} track={track} />
+        <DependencyGraph steps={allTrackSteps} track={track} />
 
         <Link
           href="/select-type"
