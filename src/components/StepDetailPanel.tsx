@@ -2,6 +2,10 @@
 
 import type { Step } from "@/lib/steps";
 
+function isUrl(value: string): boolean {
+  return /^https?:\/\//i.test(value);
+}
+
 type StepDetailPanelProps = {
   step: Step | null;
   prerequisites?: Step[];
@@ -119,17 +123,31 @@ export default function StepDetailPanel({
 
         <div className="mt-6 border-t border-zinc-100 pt-4">
           <div className="text-xs font-medium tracking-wide text-zinc-400">
-            OFFICIAL RESOURCE
+            OFFICIAL RESOURCE{step.formLinks.length > 1 ? "S" : ""}
           </div>
-          {step.formLink ? (
-            <a
-              href={step.formLink}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-2 inline-block text-sm font-medium text-brand-amber underline"
-            >
-              Visit official resource →
-            </a>
+          {step.formLinks.length > 0 ? (
+            <ul className="mt-2 flex flex-col gap-1">
+              {step.formLinks.map((entry, index) =>
+                isUrl(entry) ? (
+                  <li key={index}>
+                    <a
+                      href={entry}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-sm font-medium text-brand-amber underline"
+                    >
+                      {step.formLinks.length > 1
+                        ? `Visit resource ${index + 1} →`
+                        : "Visit official resource →"}
+                    </a>
+                  </li>
+                ) : (
+                  <li key={index} className="text-sm text-zinc-600">
+                    {entry}
+                  </li>
+                ),
+              )}
+            </ul>
           ) : (
             <p className="mt-2 text-sm text-zinc-400">-</p>
           )}

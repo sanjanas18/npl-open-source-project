@@ -14,6 +14,7 @@ import PathwayAccordion from "./PathwayAccordion";
 import DependencyGraph from "@/components/DependencyGraph";
 import { cityLabel } from "@/lib/cities";
 import { TRACK_COPY } from "@/lib/track-copy";
+import { getTrackSummary } from "@/lib/summary";
 
 export function generateStaticParams() {
   return listCities().flatMap((city) =>
@@ -48,6 +49,7 @@ export default async function PathwayOverview({
   const copy = TRACK_COPY[track];
   const allTrackSteps = stepsForTrack(city, track);
   const agencies = keyAgencies(city, track);
+  const summary = getTrackSummary(city, track);
 
   return (
     <div className="flex flex-1 flex-col bg-background">
@@ -105,11 +107,15 @@ export default async function PathwayOverview({
           </div>
           <div className="flex justify-between px-4 py-3">
             <dt className="text-zinc-500">Estimated timeline</dt>
-            <dd className="text-zinc-400">-</dd>
+            <dd className={summary.estimatedTimeline ? "font-medium text-zinc-800" : "text-zinc-400"}>
+              {summary.estimatedTimeline ?? "-"}
+            </dd>
           </div>
           <div className="flex justify-between px-4 py-3">
             <dt className="text-zinc-500">Estimated cost</dt>
-            <dd className="text-zinc-400">-</dd>
+            <dd className={summary.estimatedCost ? "font-medium text-zinc-800" : "text-zinc-400"}>
+              {summary.estimatedCost ?? "-"}
+            </dd>
           </div>
           <div className="flex justify-between px-4 py-3">
             <dt className="text-zinc-500">Total steps</dt>

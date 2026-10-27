@@ -16,7 +16,7 @@ export type Step = {
   timeToComplete?: string;
   processingTime?: string;
   renewal?: string;
-  formLink?: string;
+  formLinks: string[];
   level?: string;
 };
 
@@ -51,7 +51,9 @@ function toStep(row: Row): Step {
     timeToComplete: row["Time to Complete"]?.trim() || undefined,
     processingTime: row["Processing Time"]?.trim() || undefined,
     renewal: row["Renewal"]?.trim() || undefined,
-    formLink: row["Link to Forms"]?.trim() || undefined,
+    formLinks: row["Link to Forms"]
+      ? row["Link to Forms"].split("\n").map((line) => line.trim()).filter(Boolean)
+      : [],
     level: row["Level (NYC Home-based specific)"]?.trim() || undefined,
   };
 }

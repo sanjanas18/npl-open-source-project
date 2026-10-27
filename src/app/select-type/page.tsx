@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { tracks, stepsForTrack, keyAgencies } from "@/lib/steps";
 import { TRACK_COPY } from "@/lib/track-copy";
+import { getTrackSummary } from "@/lib/summary";
 
 // this page isn't city-aware in the URL yet, so it just shows NYC directly
 const CITY = "nyc";
@@ -34,10 +35,11 @@ export default function ComparePage() {
             const copy = TRACK_COPY[track];
             const steps = stepsForTrack(CITY, track);
             const agencies = keyAgencies(CITY, track);
+            const summary = getTrackSummary(CITY, track);
             return (
               <div
                 key={track}
-                className={`flex flex-col rounded-lg border-t-4 bg-white p-6 ${copy?.accent ?? "border-zinc-300"}`}
+                className={`flex h-full flex-col rounded-lg border-t-4 bg-white p-6 ${copy?.accent ?? "border-zinc-300"}`}
               >
                 <span className="text-xs font-semibold tracking-wide text-zinc-400">
                   {track.toUpperCase()}-BASED CHILD CARE
@@ -47,7 +49,7 @@ export default function ComparePage() {
                 </h2>
 
                 <dl className="mt-4 flex flex-col divide-y divide-zinc-100 rounded-md border border-zinc-100 text-sm">
-                  <div className={`px-3 py-2 ${(copy?.location ?? "").length > 50 ? "flex flex-col gap-1" : "flex justify-between"}`}>
+                  <div className="flex flex-col gap-1 px-3 py-2">
                     <dt className="text-zinc-500">Location</dt>
                     <dd className="font-medium text-zinc-800">{copy?.location ?? "-"}</dd>
                   </div>
@@ -57,17 +59,23 @@ export default function ComparePage() {
                   </div>
                   <div className="flex justify-between px-3 py-2">
                     <dt className="text-zinc-500">Estimated timeline</dt>
-                    <dd className="text-zinc-400">-</dd>
+                    <dd className={summary.estimatedTimeline ? "font-medium text-zinc-800" : "text-zinc-400"}>
+                      {summary.estimatedTimeline ?? "-"}
+                    </dd>
                   </div>
                   <div className="flex justify-between px-3 py-2">
                     <dt className="text-zinc-500">Estimated cost</dt>
-                    <dd className="text-zinc-400">-</dd>
+                    <dd className={summary.estimatedCost ? "font-medium text-zinc-800" : "text-zinc-400"}>
+                      {summary.estimatedCost ?? "-"}
+                    </dd>
                   </div>
                   <div className="flex justify-between px-3 py-2">
                     <dt className="text-zinc-500">Total steps</dt>
                     <dd className="font-medium text-zinc-800">{steps.length}</dd>
                   </div>
                 </dl>
+
+                <div className="flex-1" />
 
                 <Link
                   href={`/pathway/${CITY}/${encodeURIComponent(track)}`}
