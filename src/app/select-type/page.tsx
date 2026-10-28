@@ -89,38 +89,6 @@ export default function ComparePage() {
           })}
         </div>
 
-        <div className="mt-12 overflow-x-auto rounded-lg border border-zinc-200 bg-white">
-          <table className="w-full min-w-[480px] text-left text-sm">
-            <thead>
-              <tr className="border-b border-zinc-200">
-                <th className="px-4 py-3 font-semibold text-zinc-900">Key differences</th>
-                {allTracks.map((track) => (
-                  <th key={track} className="px-4 py-3 font-semibold text-zinc-900">
-                    {track}-Based
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { label: "Key agencies", values: allTracks.map((t) => keyAgencies(CITY, t).join(", ") || "-") },
-                { label: "Total steps", values: allTracks.map((t) => String(stepsForTrack(CITY, t).length)) },
-                { label: "Regulatory complexity", values: allTracks.map(() => "-") },
-                { label: "Facility investment", values: allTracks.map(() => "-") },
-              ].map((row) => (
-                <tr key={row.label} className="border-b border-zinc-100 last:border-0">
-                  <td className="px-4 py-3 text-zinc-500">{row.label}</td>
-                  {row.values.map((value, i) => (
-                    <td key={i} className="px-4 py-3 text-zinc-800">
-                      {value}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
         <div className="mt-12">
           <span className="text-xs font-semibold tracking-wide text-zinc-400">
             OTHER CHILD CARE TYPES
